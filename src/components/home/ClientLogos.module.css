@@ -73,3 +73,20 @@
   font-weight: 600;
   color: var(--text-primary);
 }
+
+
+@media (max-width: 640px) {
+  .section {
+    padding: 2rem 0;
+  }
+
+  .grid,
+  .slider {
+    gap: 1.5rem;
+  }
+
+  .logo {
+    max-width: 120px;
+    max-height: 45px;
+  }
+}

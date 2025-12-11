@@ -96,3 +96,30 @@
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(178, 48, 40, 0.3);
 }
+
+
+@media (max-width: 640px) {
+  .section {
+    padding: 3rem 0;
+  }
+
+  .header h2 {
+    font-size: 1.75rem;
+  }
+
+  .grid,
+  .slider {
+    gap: 1.5rem;
+  }
+
+  .logo {
+    max-width: 100px;
+    max-height: 60px;
+  }
+
+  .placeholder {
+    width: 55px;
+    height: 55px;
+    font-size: 1.25rem;
+  }
+}
