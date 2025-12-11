@@ -2,10 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
-  // Enable experimental features for faster navigation
-  experimental: {
-    optimizeCss: true,
-  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
