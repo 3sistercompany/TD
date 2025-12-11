@@ -321,13 +321,12 @@ export default function ContactPage() {
           {/* Map - 70% width */}
           <div className={styles.mapWrapper}>
             <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3620.8!2d46.7660758!3d24.8499463!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3e2eff6e849a1517%3A0xd6d8e8d1761a6350!2sTD%20Logistics%20%7C%20%D8%AA%D9%8A%20%D8%AF%D9%8A%20%D9%84%D9%84%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%A7%D9%84%D9%84%D9%88%D8%AC%D8%B3%D8%AA%D9%8A%D8%A9!5e0!3m2!1sen!2ssa!4v1234567890!5m2!1sen!2ssa"
+              src="https://www.openstreetmap.org/export/embed.html?bbox=46.755%2C24.840%2C46.780%2C24.860&layer=mapnik&marker=24.8499%2C46.7661"
               width="100%"
               height="100%"
               style={{ border: 0 }}
               allowFullScreen
               loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
               title="TD Logistics - 3400 Al Thoumamah Rd, RUMB3400, Riyadh 13422"
             ></iframe>
           </div>
