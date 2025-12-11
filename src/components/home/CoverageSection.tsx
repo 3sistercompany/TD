@@ -48,7 +48,7 @@ export default function CoverageSection() {
           <div className={styles.mapContent}>
             <div className={styles.mapWrapper}>
               <Image
-                src="/saudi-arabia.avif"
+                src="/saudi arabia.jpg"
                 alt="Saudi Arabia Coverage Map"
                 fill
                 style={{ objectFit: 'contain' }}

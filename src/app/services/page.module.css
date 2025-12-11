@@ -132,43 +132,12 @@
   box-shadow: var(--shadow-xl);
 }
 
-.imagePlaceholder {
+.serviceImg {
+  width: 100%;
+  height: auto;
   aspect-ratio: 4/3;
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.placeholderIcon {
-  font-size: 5rem;
-  color: white;
-  opacity: 0.3;
-}
-
-/* CTA */
-.cta {
-  padding: 5rem 0;
-  background: var(--background-secondary);
-}
-
-.ctaContent {
-  text-align: center;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.ctaContent h2 {
-  font-size: 1.75rem;
-  font-weight: 800;
-  margin-bottom: 0.75rem;
-  color: var(--text-primary);
-}
-
-.ctaContent p {
-  font-size: 1.0625rem;
-  color: var(--text-secondary);
-  margin-bottom: 1.5rem;
+  object-fit: cover;
+  display: block;
 }
 
 @media (max-width: 1024px) {

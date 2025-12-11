@@ -333,16 +333,11 @@ export default function ContactPage() {
           </div>
           {/* Image - 30% width */}
           <div className={styles.imageWrapper}>
-            <div className={styles.imagePlaceholder}>
-              <FiMapPin size={48} />
-              <div className={styles.addressText}>
-                <strong>TD Logistics</strong>
-                <span>3400 Al Thoumamah Rd</span>
-                <span>RUMB3400</span>
-                <span>Riyadh 13422</span>
-                <span>{t('contact.location.saudiArabia')}</span>
-              </div>
-            </div>
+            <img 
+              src="/support_map_section.webp" 
+              alt="TD Logistics Location" 
+              className={styles.locationImg}
+            />
           </div>
         </div>
       </section>

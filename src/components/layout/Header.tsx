@@ -85,7 +85,7 @@ export default function Header() {
             {/* Desktop Navigation */}
             <nav className={styles.nav}>
               {navLinks.map((link) => (
-                <Link key={link.href} href={link.href} className={styles.navLink}>
+                <Link key={link.href} href={link.href} className={styles.navLink} prefetch={true}>
                   {link.label}
                 </Link>
               ))}

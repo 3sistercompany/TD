@@ -48,7 +48,7 @@ export default function ClientsSection() {
     if (!isWrapped || clients.length === 0) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % clients.length);
-    }, 3000);
+    }, 2000);
     return () => clearInterval(interval);
   }, [isWrapped, clients.length]);
 

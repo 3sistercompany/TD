@@ -214,36 +214,11 @@
   position: relative;
 }
 
-.imagePlaceholder {
+.locationImg {
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  padding: 2rem;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  color: white;
-  text-align: center;
-}
-
-.addressText {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  font-size: 0.9375rem;
-  line-height: 1.4;
-}
-
-.addressText strong {
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin-bottom: 0.5rem;
-}
-
-.addressText span {
-  opacity: 0.95;
+  object-fit: cover;
+  display: block;
 }
 
 @media (max-width: 768px) {

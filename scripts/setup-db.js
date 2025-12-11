@@ -207,6 +207,19 @@ CREATE TABLE IF NOT EXISTS admin_users (
   updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Career applications table
+CREATE TABLE IF NOT EXISTS career_applications (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  phone TEXT NOT NULL,
+  position TEXT NOT NULL,
+  message TEXT,
+  status TEXT CHECK(status IN ('new', 'reviewing', 'interviewed', 'accepted', 'rejected')) DEFAULT 'new',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);

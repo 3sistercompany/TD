@@ -5,6 +5,7 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import FloatingContact from '@/components/ui/FloatingContact';
 import DynamicHead from '@/components/layout/DynamicHead';
+import PageTransition from '@/components/ui/PageTransition';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -95,7 +96,9 @@ export default function RootLayout({
         <LanguageProvider>
           <DynamicHead />
           <Header />
-          <main>{children}</main>
+          <PageTransition>
+            <main>{children}</main>
+          </PageTransition>
           <Footer />
           <FloatingContact />
         </LanguageProvider>

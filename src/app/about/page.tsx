@@ -2,7 +2,6 @@
 
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import { FiTruck, FiTarget, FiAward, FiUsers, FiCheckCircle } from 'react-icons/fi';
-import Image from 'next/image';
 import Testimonials from '@/components/home/Testimonials';
 import CTA from '@/components/home/CTA';
 import styles from './page.module.css';
@@ -83,22 +82,13 @@ export default function AboutPage() {
       <section className={styles.imageDivider}>
         <div className={styles.imageGrid}>
           <div className={styles.imageItem}>
-            <div className={styles.imagePlaceholder}>
-              <FiTruck size={48} />
-              <span>Operations</span>
-            </div>
+            <img src="/aboutus_1.webp" alt="Operations" className={styles.aboutImg} />
           </div>
           <div className={styles.imageItem}>
-            <div className={styles.imagePlaceholder}>
-              <FiUsers size={48} />
-              <span>Our Team</span>
-            </div>
+            <img src="/aboutus_2.jpg" alt="Our Team" className={styles.aboutImg} />
           </div>
           <div className={styles.imageItem}>
-            <div className={styles.imagePlaceholder}>
-              <FiCheckCircle size={48} />
-              <span>Delivery Excellence</span>
-            </div>
+            <img src="/aboutus_3.jpg" alt="Delivery Excellence" className={styles.aboutImg} />
           </div>
         </div>
       </section>

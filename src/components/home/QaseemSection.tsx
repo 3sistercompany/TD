@@ -22,7 +22,7 @@ export default function QaseemSection() {
             <div className={styles.imageWrapper}>
               <Image
                 src="/qaseem.jpg"
-                alt="Qaseem Region Map"
+                alt="Qaseem Region"
                 fill
                 style={{ objectFit: 'cover' }}
                 priority

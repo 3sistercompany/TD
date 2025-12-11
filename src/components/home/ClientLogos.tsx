@@ -48,7 +48,7 @@ export default function ClientLogos() {
     if (!isWrapped || brands.length === 0) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % brands.length);
-    }, 3000);
+    }, 2000);
     return () => clearInterval(interval);
   }, [isWrapped, brands.length]);
 

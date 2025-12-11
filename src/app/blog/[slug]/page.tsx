@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { FiCalendar, FiUser, FiArrowRight, FiArrowLeft, FiEye } from 'react-icons/fi';
@@ -21,12 +21,20 @@ interface BlogPost {
   meta_description: string | null;
 }
 
+interface TranslatedContent {
+  title: string;
+  excerpt: string;
+  content: string;
+}
+
 export default function BlogPostPage() {
   const { t, language, isRTL } = useLanguage();
   const params = useParams();
   const slug = params.slug as string;
   const [post, setPost] = useState<BlogPost | null>(null);
+  const [translatedContent, setTranslatedContent] = useState<TranslatedContent | null>(null);
   const [loading, setLoading] = useState(true);
+  const [translating, setTranslating] = useState(false);
   const [error, setError] = useState('');
   const [allImages, setAllImages] = useState<string[]>([]);
 
@@ -40,6 +48,59 @@ export default function BlogPostPage() {
     }).format(date);
     return `${gregorian} | ${islamic}`;
   };
+
+  const translateContent = useCallback(async (postData: BlogPost) => {
+    if (language === 'ar') {
+      setTranslatedContent({
+        title: postData.title,
+        excerpt: postData.excerpt,
+        content: postData.content,
+      });
+      return;
+    }
+
+    setTranslating(true);
+    try {
+      const [titleRes, excerptRes, contentRes] = await Promise.all([
+        fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: postData.title, targetLang: 'en', sourceLang: 'ar' }),
+        }),
+        fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: postData.excerpt, targetLang: 'en', sourceLang: 'ar' }),
+        }),
+        fetch('/api/translate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: postData.content, targetLang: 'en', sourceLang: 'ar' }),
+        }),
+      ]);
+
+      const [titleData, excerptData, contentData] = await Promise.all([
+        titleRes.json(),
+        excerptRes.json(),
+        contentRes.json(),
+      ]);
+
+      setTranslatedContent({
+        title: titleData.translatedText || postData.title,
+        excerpt: excerptData.translatedText || postData.excerpt,
+        content: contentData.translatedText || postData.content,
+      });
+    } catch (error) {
+      console.error('Translation error:', error);
+      setTranslatedContent({
+        title: postData.title,
+        excerpt: postData.excerpt,
+        content: postData.content,
+      });
+    } finally {
+      setTranslating(false);
+    }
+  }, [language]);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -58,6 +119,9 @@ export default function BlogPostPage() {
           try { images.push(...JSON.parse(data.images)); } catch {}
         }
         setAllImages(images);
+        
+        // Translate content
+        await translateContent(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : t('common.error'));
       } finally {
@@ -65,7 +129,7 @@ export default function BlogPostPage() {
       }
     };
     if (slug) fetchPost();
-  }, [slug, t]);
+  }, [slug, t, translateContent]);
 
   const BackIcon = isRTL ? FiArrowRight : FiArrowLeft;
 
@@ -96,6 +160,10 @@ export default function BlogPostPage() {
     );
   }
 
+  const displayTitle = translatedContent?.title || post.title;
+  const displayExcerpt = translatedContent?.excerpt || post.excerpt;
+  const displayContent = translatedContent?.content || post.content;
+
   return (
     <div className={styles.blogPostPage}>
       <section className={styles.hero}>
@@ -104,7 +172,12 @@ export default function BlogPostPage() {
             <BackIcon />
             {t('blog.backToBlog')}
           </Link>
-          <h1>{post.title}</h1>
+          <h1>{displayTitle}</h1>
+          {translating && (
+            <div className={styles.translatingBanner}>
+              {language === 'ar' ? 'جاري الترجمة...' : 'Translating...'}
+            </div>
+          )}
           <div className={styles.meta}>
             <span className={styles.metaItem}><FiUser />{t('blog.author')}</span>
             <span className={styles.metaItem}><FiCalendar />{formatDate(post.published_at)}</span>
@@ -117,12 +190,12 @@ export default function BlogPostPage() {
           <article className={styles.article}>
             {post.featured_image && (
               <div className={styles.featuredImage}>
-                <img src={post.featured_image} alt={post.title} />
+                <img src={post.featured_image} alt={displayTitle} />
               </div>
             )}
-            {post.excerpt && <p className={styles.excerpt}>{post.excerpt}</p>}
+            {displayExcerpt && <p className={styles.excerpt}>{displayExcerpt}</p>}
             <div className={styles.articleContent}>
-              {post.content.split('\n').map((paragraph, index) => (
+              {displayContent.split('\n').map((paragraph, index) => (
                 paragraph.trim() && <p key={index}>{paragraph}</p>
               ))}
             </div>

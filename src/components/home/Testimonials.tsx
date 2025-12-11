@@ -53,7 +53,7 @@ export default function Testimonials() {
     if (!isWrapped || reviews.length === 0) return;
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % reviews.length);
-    }, 4000);
+    }, 3000);
     return () => clearInterval(interval);
   }, [isWrapped, reviews.length]);
 

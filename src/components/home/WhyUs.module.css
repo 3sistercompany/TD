@@ -39,19 +39,12 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
 }
 
-.imagePlaceholder {
+.whyUsImg {
+  width: 100%;
+  height: auto;
   aspect-ratio: 4/3;
-  background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  opacity: 0.9;
-}
-
-.placeholderIcon {
-  font-size: 5rem;
-  opacity: 0.5;
+  object-fit: cover;
+  display: block;
 }
 
 .featuresContent {

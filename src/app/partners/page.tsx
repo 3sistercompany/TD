@@ -161,9 +161,11 @@ export default function PartnersPage() {
 
             <div className={styles.heroImage}>
               <div className={styles.imageWrapper}>
-                <div className={styles.imagePlaceholder}>
-                  <FiCheckCircle size={80} />
-                </div>
+                <img 
+                  src="/why_choose_td.webp" 
+                  alt={language === 'ar' ? 'شراكة تي دي للخدمات اللوجستية' : 'TD Logistics Partnership'} 
+                  className={styles.heroImg}
+                />
               </div>
             </div>
           </div>

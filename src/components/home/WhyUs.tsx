@@ -1,6 +1,6 @@
 'use client';
 
-import { FiCheck, FiAward, FiClock, FiHeadphones, FiMapPin, FiShield } from 'react-icons/fi';
+import { FiCheck, FiHeadphones, FiShield } from 'react-icons/fi';
 import { useLanguage } from '@/lib/i18n/LanguageContext';
 import styles from './WhyUs.module.css';
 
@@ -38,9 +38,7 @@ export default function WhyUs() {
         <div className={styles.content}>
           <div className={styles.imageContent}>
             <div className={styles.imageWrapper}>
-              <div className={styles.imagePlaceholder}>
-                <FiMapPin className={styles.placeholderIcon} />
-              </div>
+              <img src="/why_choose_td.webp" alt="Why Choose TD Logistics" className={styles.whyUsImg} />
             </div>
           </div>
 

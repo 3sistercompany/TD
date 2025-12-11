@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { FiTruck, FiPackage, FiRefreshCw, FiDollarSign, FiBox, FiShield, FiCheck, FiArrowLeft, FiArrowRight } from 'react-icons/fi';
 import { useLanguage } from '@/lib/i18n';
+import CTA from '@/components/home/CTA';
 import styles from './page.module.css';
 
 const serviceIcons = {
@@ -62,9 +63,16 @@ export default function ServicesContent() {
                   </Link>
                 </div>
                 <div className={styles.serviceImage}>
-                  <div className={styles.imagePlaceholder}>
-                    <Icon className={styles.placeholderIcon} />
-                  </div>
+                  <img 
+                    src={`/${serviceId === 'delivery' ? 'express_delivery.jpg' : 
+                          serviceId === 'storage' ? 'Storage & Warehousing.jpg' :
+                          serviceId === 'fulfillment' ? 'Fulfillment Services.jpg' :
+                          serviceId === 'cod' ? 'Cash on Delivery.jpg' :
+                          serviceId === 'returns' ? 'Returns Management.jpg' :
+                          'Shipment Insurance.jpg'}`}
+                    alt={t(`services.list.${serviceId}.title`)}
+                    className={styles.serviceImg}
+                  />
                 </div>
               </div>
             );
@@ -73,17 +81,7 @@ export default function ServicesContent() {
       </section>
 
       {/* CTA */}
-      <section className={styles.cta}>
-        <div className="container">
-          <div className={styles.ctaContent}>
-            <h2>{t('services.customCta.title')}</h2>
-            <p>{t('services.customCta.subtitle')}</p>
-            <Link href="/contact" className="btn btn-primary btn-lg">
-              {t('services.customCta.button')}
-            </Link>
-          </div>
-        </div>
-      </section>
+      <CTA />
     </div>
   );
 }
