@@ -9,9 +9,7 @@ out/
 build/
 dist/
 
-# Database
-data/
-*.db
+# Database (allow td_logistics.db for deployment)
 *.db-journal
 *.db-wal
 *.db-shm

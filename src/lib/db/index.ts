@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 import path from 'path';
+import fs from 'fs';
 import SCHEMA from './schema';
 
 // Singleton database instance
@@ -7,7 +8,16 @@ let db: Database.Database | null = null;
 
 export function getDb(): Database.Database {
   if (!db) {
-    const dbPath = path.join(process.cwd(), 'data', 'td_logistics.db');
+    // Use RAILWAY_VOLUME_MOUNT_PATH if available (Railway persistent storage)
+    // Otherwise fall back to local data directory
+    const dataDir = process.env.RAILWAY_VOLUME_MOUNT_PATH || path.join(process.cwd(), 'data');
+    
+    // Ensure directory exists
+    if (!fs.existsSync(dataDir)) {
+      fs.mkdirSync(dataDir, { recursive: true });
+    }
+    
+    const dbPath = path.join(dataDir, 'td_logistics.db');
     db = new Database(dbPath);
     
     // Enable WAL mode for better performance
