@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { query, queryOne, execute } from '@/lib/db';
-import { sendNewBlogPostNotification } from '@/lib/email';
+import { sendNewBlogPostNotification } from '@/lib/email/edge';
 
 export const runtime = 'edge';
 

@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { existsSync } from 'fs';
-import path from 'path';
 
 export const runtime = 'edge';
 
@@ -35,28 +32,26 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Create upload directory if it doesn't exist
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', folder);
-    if (!existsSync(uploadDir)) {
-      await mkdir(uploadDir, { recursive: true });
-    }
-
-    // Generate unique filename
+    // Edge runtime limitation: Cannot write to filesystem
+    // In production, use Cloudflare R2, AWS S3, or similar cloud storage
+    // For now, return a placeholder response
+    console.log('[Edge Upload] File upload received:', file.name, 'to folder:', folder);
+    
+    // Generate a placeholder URL (in production, upload to R2/S3 and return real URL)
     const ext = file.name.split('.').pop() || 'png';
     const timestamp = Date.now();
     const randomStr = Math.random().toString(36).substring(2, 8);
     const filename = `${timestamp}-${randomStr}.${ext}`;
-    const filepath = path.join(uploadDir, filename);
-
-    // Write file
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-    await writeFile(filepath, buffer);
-
-    // Return the public URL
-    const url = `/uploads/${folder}/${filename}`;
-
-    return NextResponse.json({ success: true, url });
+    
+    // TODO: Implement Cloudflare R2 upload
+    // For now, return error explaining the limitation
+    return NextResponse.json(
+      { 
+        error: 'File upload is not available in edge runtime. Please upload images directly to your hosting or use a cloud storage service.',
+        suggestion: 'Consider using Cloudflare R2 or uploading images manually to the public folder.'
+      }, 
+      { status: 501 }
+    );
   } catch (error) {
     console.error('Error uploading file:', error);
     return NextResponse.json({ error: 'Failed to upload file' }, { status: 500 });

@@ -3,7 +3,7 @@ import { quoteSchema } from '@/lib/validation/schemas';
 import { sanitizeInput, sanitizeEmail, sanitizePhone } from '@/lib/security/sanitize';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/security/rate-limit';
 import { execute, queryOne } from '@/lib/db';
-import { sendQuoteConfirmation, sendQuoteAdminNotification, sendNewsletterWelcome } from '@/lib/email';
+import { sendQuoteConfirmation, sendQuoteAdminNotification, sendNewsletterWelcome } from '@/lib/email/edge';
 
 export const runtime = 'edge';
 

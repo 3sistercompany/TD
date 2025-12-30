@@ -3,7 +3,7 @@ import { contactSchema } from '@/lib/validation/schemas';
 import { sanitizeInput, sanitizeEmail, sanitizePhone } from '@/lib/security/sanitize';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/security/rate-limit';
 import { execute, queryOne } from '@/lib/db';
-import { sendContactConfirmation, sendContactAdminNotification, sendNewsletterWelcome } from '@/lib/email';
+import { sendContactConfirmation, sendContactAdminNotification, sendNewsletterWelcome } from '@/lib/email/edge';
 
 export const runtime = 'edge';
 

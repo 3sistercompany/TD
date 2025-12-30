@@ -1,5 +1,4 @@
 import { SignJWT, jwtVerify } from 'jose';
-import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
 
 const JWT_SECRET = new TextEncoder().encode(
@@ -16,14 +15,76 @@ export interface UserPayload {
   name: string;
 }
 
-// Hash password with bcrypt
+// Edge-compatible password hashing using Web Crypto API with PBKDF2
 export async function hashPassword(password: string): Promise<string> {
-  return bcrypt.hash(password, 12);
+  const encoder = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(16));
+  const keyMaterial = await crypto.subtle.importKey(
+    'raw',
+    encoder.encode(password),
+    'PBKDF2',
+    false,
+    ['deriveBits']
+  );
+  const derivedBits = await crypto.subtle.deriveBits(
+    {
+      name: 'PBKDF2',
+      salt: salt,
+      iterations: 100000,
+      hash: 'SHA-256',
+    },
+    keyMaterial,
+    256
+  );
+  const hashArray = Array.from(new Uint8Array(derivedBits));
+  const saltArray = Array.from(salt);
+  // Format: salt$hash (both hex encoded)
+  const saltHex = saltArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+  return `${saltHex}$${hashHex}`;
 }
 
-// Verify password
-export async function verifyPassword(password: string, hash: string): Promise<boolean> {
-  return bcrypt.compare(password, hash);
+// Edge-compatible password verification
+export async function verifyPassword(password: string, storedHash: string): Promise<boolean> {
+  try {
+    // Handle bcrypt hashes (legacy) - they start with $2
+    if (storedHash.startsWith('$2')) {
+      // For bcrypt hashes, we can't verify on edge - return false
+      // User will need to reset password
+      console.warn('Legacy bcrypt hash detected - cannot verify on edge runtime');
+      return false;
+    }
+    
+    // Handle PBKDF2 hashes (new format: salt$hash)
+    const [saltHex, hashHex] = storedHash.split('$');
+    if (!saltHex || !hashHex) return false;
+    
+    const salt = new Uint8Array(saltHex.match(/.{2}/g)!.map(byte => parseInt(byte, 16)));
+    const encoder = new TextEncoder();
+    const keyMaterial = await crypto.subtle.importKey(
+      'raw',
+      encoder.encode(password),
+      'PBKDF2',
+      false,
+      ['deriveBits']
+    );
+    const derivedBits = await crypto.subtle.deriveBits(
+      {
+        name: 'PBKDF2',
+        salt: salt,
+        iterations: 100000,
+        hash: 'SHA-256',
+      },
+      keyMaterial,
+      256
+    );
+    const hashArray = Array.from(new Uint8Array(derivedBits));
+    const computedHashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return computedHashHex === hashHex;
+  } catch (error) {
+    console.error('Password verification error:', error);
+    return false;
+  }
 }
 
 // Generate JWT token
