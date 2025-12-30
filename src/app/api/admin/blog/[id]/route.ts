@@ -34,7 +34,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const post = queryOne<BlogPost>('SELECT * FROM blog_posts WHERE id = ?', [id]);
+    const post = await queryOne<BlogPost>('SELECT * FROM blog_posts WHERE id = ?', [id]);
 
     if (!post) {
       return NextResponse.json(
@@ -63,7 +63,7 @@ export async function PUT(
     const body = await request.json();
     const { title, content, excerpt, featured_image, images, status, meta_title, meta_description } = body;
 
-    const existingPost = queryOne<BlogPost>('SELECT * FROM blog_posts WHERE id = ?', [id]);
+    const existingPost = await queryOne<BlogPost>('SELECT * FROM blog_posts WHERE id = ?', [id]);
     if (!existingPost) {
       return NextResponse.json(
         { error: 'المقال غير موجود' },
@@ -75,7 +75,7 @@ export async function PUT(
     const isNewlyPublished = status === 'published' && existingPost.status !== 'published';
     const publishedAt = isNewlyPublished ? new Date().toISOString() : existingPost.published_at;
 
-    execute(
+    await execute(
       `UPDATE blog_posts SET 
         title = COALESCE(?, title),
         excerpt = COALESCE(?, excerpt),
@@ -94,7 +94,7 @@ export async function PUT(
     // If newly published, send newsletter notification
     if (isNewlyPublished) {
       try {
-        const subscribers = query<NewsletterSubscriber>(
+        const subscribers = await query<NewsletterSubscriber>(
           'SELECT email, name FROM newsletter_subscribers WHERE is_active = 1'
         );
         
@@ -134,7 +134,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    const existingPost = queryOne<BlogPost>('SELECT id FROM blog_posts WHERE id = ?', [id]);
+    const existingPost = await queryOne<BlogPost>('SELECT id FROM blog_posts WHERE id = ?', [id]);
     if (!existingPost) {
       return NextResponse.json(
         { error: 'المقال غير موجود' },
@@ -142,7 +142,7 @@ export async function DELETE(
       );
     }
 
-    execute('DELETE FROM blog_posts WHERE id = ?', [id]);
+    await execute('DELETE FROM blog_posts WHERE id = ?', [id]);
 
     return NextResponse.json({
       success: true,

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if subscriber exists
-    const subscriber = queryOne<Subscriber>(
+    const subscriber = await queryOne<Subscriber>(
       'SELECT id, email, is_active FROM newsletter_subscribers WHERE email = ?',
       [email]
     );
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Deactivate subscription
-    execute(
+    await execute(
       'UPDATE newsletter_subscribers SET is_active = 0, unsubscribed_at = CURRENT_TIMESTAMP WHERE email = ?',
       [email]
     );

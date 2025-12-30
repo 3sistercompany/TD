@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Find user
-    const user = queryOne<User>(
+    const user = await queryOne<User>(
       'SELECT * FROM users WHERE email = ?',
       [sanitizedEmail]
     );
@@ -119,12 +119,12 @@ export async function POST(request: NextRequest) {
       if (newAttempts >= 5) {
         // Lock account for 30 minutes
         const lockUntil = new Date(Date.now() + 30 * 60 * 1000).toISOString();
-        execute(
+        await execute(
           'UPDATE users SET failed_login_attempts = ?, locked_until = ? WHERE id = ?',
           [newAttempts, lockUntil, user.id]
         );
       } else {
-        execute(
+        await execute(
           'UPDATE users SET failed_login_attempts = ? WHERE id = ?',
           [newAttempts, user.id]
         );
@@ -137,7 +137,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Reset failed attempts and update last login
-    execute(
+    await execute(
       'UPDATE users SET failed_login_attempts = 0, locked_until = NULL, last_login = CURRENT_TIMESTAMP WHERE id = ?',
       [user.id]
     );

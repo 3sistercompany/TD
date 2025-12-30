@@ -1,65 +1,83 @@
-import Database from 'better-sqlite3';
-import path from 'path';
-import fs from 'fs';
+import { createClient } from '@libsql/client';
+import type { Client, ResultSet, InValue } from '@libsql/client';
 import SCHEMA from './schema';
 
-// Singleton database instance
-let db: Database.Database | null = null;
+// Type for database parameters - accepts common types
+type DbParam = string | number | boolean | null | undefined | bigint | ArrayBuffer | Uint8Array;
 
-export function getDb(): Database.Database {
+// Singleton database instance
+let db: Client | null = null;
+
+export function getDb(): Client {
   if (!db) {
-    // Use RAILWAY_VOLUME_MOUNT_PATH if available (Railway persistent storage)
-    // Otherwise fall back to local data directory
-    const dataDir = process.env.RAILWAY_VOLUME_MOUNT_PATH || path.join(process.cwd(), 'data');
+    // Check if we're using Turso (production/Cloudflare)
+    const tursoUrl = process.env.TURSO_DATABASE_URL;
+    const tursoToken = process.env.TURSO_AUTH_TOKEN;
     
-    // Ensure directory exists
-    if (!fs.existsSync(dataDir)) {
-      fs.mkdirSync(dataDir, { recursive: true });
+    if (tursoUrl && tursoToken) {
+      // Use Turso for production
+      db = createClient({
+        url: tursoUrl,
+        authToken: tursoToken,
+      });
+    } else {
+      // Use local SQLite for development
+      const dbPath = process.env.DATABASE_PATH || './data/td_logistics.db';
+      db = createClient({
+        url: `file:${dbPath}`,
+      });
     }
     
-    const dbPath = path.join(dataDir, 'td_logistics.db');
-    db = new Database(dbPath);
-    
-    // Enable WAL mode for better performance
-    db.pragma('journal_mode = WAL');
-    
-    // Enable foreign keys
-    db.pragma('foreign_keys = ON');
-    
     // Initialize schema
-    db.exec(SCHEMA);
+    initSchema();
   }
   
   return db;
 }
 
-// Prepared statement wrapper for SQL injection prevention
-export function prepareStatement(sql: string) {
-  return getDb().prepare(sql);
+// Initialize database schema
+async function initSchema() {
+  if (!db) return;
+  
+  try {
+    await db.execute(SCHEMA);
+  } catch (error) {
+    console.error('Error initializing schema:', error);
+  }
 }
 
 // Safe query execution with parameterized queries
-export function query<T>(sql: string, params: unknown[] = []): T[] {
-  const stmt = prepareStatement(sql);
-  return stmt.all(...params) as T[];
+export async function query<T>(sql: string, params: DbParam[] = []): Promise<T[]> {
+  const db = getDb();
+  const result = await db.execute({ sql, args: params as InValue[] });
+  return result.rows as T[];
 }
 
 // Safe single row query
-export function queryOne<T>(sql: string, params: unknown[] = []): T | undefined {
-  const stmt = prepareStatement(sql);
-  return stmt.get(...params) as T | undefined;
+export async function queryOne<T>(sql: string, params: DbParam[] = []): Promise<T | undefined> {
+  const db = getDb();
+  const result = await db.execute({ sql, args: params as InValue[] });
+  return result.rows[0] as T | undefined;
 }
 
 // Safe insert/update/delete
-export function execute(sql: string, params: unknown[] = []): Database.RunResult {
-  const stmt = prepareStatement(sql);
-  return stmt.run(...params);
+export async function execute(sql: string, params: DbParam[] = []): Promise<ResultSet> {
+  const db = getDb();
+  return await db.execute({ sql, args: params as InValue[] });
 }
 
 // Transaction wrapper
-export function transaction<T>(fn: () => T): T {
+export async function transaction<T>(fn: () => Promise<T>): Promise<T> {
   const db = getDb();
-  return db.transaction(fn)();
+  await db.execute('BEGIN');
+  try {
+    const result = await fn();
+    await db.execute('COMMIT');
+    return result;
+  } catch (error) {
+    await db.execute('ROLLBACK');
+    throw error;
+  }
 }
 
 // Close database connection

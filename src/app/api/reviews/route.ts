@@ -25,7 +25,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 50);
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const reviews = query<CustomerReview>(
+    const reviews = await query<CustomerReview>(
       `SELECT id, customer_name, company_name, position, review_text, rating, avatar_url, published_at 
        FROM customer_reviews 
        WHERE status = 'published' 
@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
       [limit, offset]
     );
 
-    const total = queryOne<{ count: number }>(
+    const total = await queryOne<{ count: number }>(
       "SELECT COUNT(*) as count FROM customer_reviews WHERE status = 'published'"
     );
 

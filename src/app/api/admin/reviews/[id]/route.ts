@@ -28,7 +28,7 @@ export async function GET(
 ) {
   try {
     const { id } = await params;
-    const review = queryOne<CustomerReview>('SELECT * FROM customer_reviews WHERE id = ?', [id]);
+    const review = await queryOne<CustomerReview>('SELECT * FROM customer_reviews WHERE id = ?', [id]);
 
     if (!review) {
       return NextResponse.json(
@@ -57,7 +57,7 @@ export async function PUT(
     const body = await request.json();
     const { customer_name, company_name, position, review_text, rating, avatar_url, status } = body;
 
-    const existingReview = queryOne<CustomerReview>('SELECT * FROM customer_reviews WHERE id = ?', [id]);
+    const existingReview = await queryOne<CustomerReview>('SELECT * FROM customer_reviews WHERE id = ?', [id]);
     if (!existingReview) {
       return NextResponse.json(
         { error: 'الرأي غير موجود' },
@@ -76,7 +76,7 @@ export async function PUT(
     const isNewlyPublished = status === 'published' && existingReview.status !== 'published';
     const publishedAt = isNewlyPublished ? new Date().toISOString() : existingReview.published_at;
 
-    execute(
+    await execute(
       `UPDATE customer_reviews SET 
         customer_name = COALESCE(?, customer_name),
         company_name = COALESCE(?, company_name),
@@ -112,7 +112,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     
-    const existingReview = queryOne<CustomerReview>('SELECT id FROM customer_reviews WHERE id = ?', [id]);
+    const existingReview = await queryOne<CustomerReview>('SELECT id FROM customer_reviews WHERE id = ?', [id]);
     if (!existingReview) {
       return NextResponse.json(
         { error: 'الرأي غير موجود' },
@@ -120,7 +120,7 @@ export async function DELETE(
       );
     }
 
-    execute('DELETE FROM customer_reviews WHERE id = ?', [id]);
+    await execute('DELETE FROM customer_reviews WHERE id = ?', [id]);
 
     return NextResponse.json({
       success: true,

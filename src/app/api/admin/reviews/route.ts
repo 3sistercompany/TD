@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     let sql = 'SELECT * FROM customer_reviews';
-    const params: unknown[] = [];
+    const params: (string | number)[] = [];
 
     if (status) {
       sql += ' WHERE status = ?';
@@ -40,8 +40,8 @@ export async function GET(request: NextRequest) {
     sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
     params.push(limit, offset);
 
-    const reviews = query<CustomerReview>(sql, params);
-    const total = queryOne<{ count: number }>(
+    const reviews = await query<CustomerReview>(sql, params);
+    const total = await queryOne<{ count: number }>(
       `SELECT COUNT(*) as count FROM customer_reviews ${status ? 'WHERE status = ?' : ''}`,
       status ? [status] : []
     );
@@ -83,7 +83,7 @@ export async function POST(request: NextRequest) {
 
     const publishedAt = status === 'published' ? new Date().toISOString() : null;
 
-    const result = execute(
+    const result = await execute(
       `INSERT INTO customer_reviews (customer_name, company_name, position, review_text, rating, avatar_url, status, published_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [customer_name, company_name || null, position || null, review_text, rating || 5, avatar_url || null, status || 'pending', publishedAt]
@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      id: result.lastInsertRowid,
+      id: Number(result.lastInsertRowid),
       message: 'تم إضافة الرأي بنجاح',
     }, { status: 201, headers: securityHeaders });
   } catch (error) {

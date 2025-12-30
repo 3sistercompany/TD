@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
     sql += ' ORDER BY sort_order ASC, id DESC';
 
     console.log('GET /api/brands - Executing query:', sql, 'params:', params);
-    const brands = query<{
+    const brands = await query<{
       id: number;
       name: string;
       logo_url: string | null;
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
-    const result = execute(
+    const result = await execute(
       'INSERT INTO brands (name, logo_url, type) VALUES (?, ?, ?)',
       [name, logo_url || null, type]
     );
@@ -76,7 +76,7 @@ export async function PUT(request: NextRequest) {
     }
 
     if (name !== undefined) {
-      execute(
+      await execute(
         'UPDATE brands SET name = ?, logo_url = ?, type = ?, is_active = ? WHERE id = ?',
         [name, logo_url || null, type || 'platform', is_active ?? 1, id]
       );
@@ -98,7 +98,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    execute('DELETE FROM brands WHERE id = ?', [id]);
+    await execute('DELETE FROM brands WHERE id = ?', [id]);
 
     return NextResponse.json({ success: true });
   } catch (error) {

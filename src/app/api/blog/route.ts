@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 50);
     const offset = parseInt(searchParams.get('offset') || '0');
 
-    const posts = query<BlogPost>(
+    const posts = await query<BlogPost>(
       `SELECT id, title, slug, excerpt, featured_image, published_at, views, meta_title, meta_description 
        FROM blog_posts 
        WHERE status = 'published' 
@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
       [limit, offset]
     );
 
-    const total = queryOne<{ count: number }>(
+    const total = await queryOne<{ count: number }>(
       "SELECT COUNT(*) as count FROM blog_posts WHERE status = 'published'"
     );
 

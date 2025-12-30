@@ -82,7 +82,7 @@ export async function POST(request: NextRequest) {
     const userAgent = request.headers.get('user-agent') || 'unknown';
 
     // Insert into database using parameterized query (SQL injection safe)
-    execute(
+    await execute(
       `INSERT INTO contact_submissions 
        (name, email, phone, company, subject, message, type, ip_address, user_agent) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -100,14 +100,14 @@ export async function POST(request: NextRequest) {
     );
 
     // Subscribe to newsletter (if not already subscribed)
-    const existingSubscriber = queryOne<{ id: number }>(
+    const existingSubscriber = await queryOne<{ id: number }>(
       'SELECT id FROM newsletter_subscribers WHERE email = ?',
       [sanitizedData.email]
     );
 
     let isNewSubscriber = false;
     if (!existingSubscriber) {
-      execute(
+      await execute(
         `INSERT INTO newsletter_subscribers (email, name, source) VALUES (?, ?, 'contact')`,
         [sanitizedData.email, sanitizedData.name]
       );

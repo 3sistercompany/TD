@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert into database
-    execute(
+    await execute(
       `INSERT INTO quote_requests 
        (name, email, phone, company, service_type, origin_city, destination_city, estimated_volume, additional_details) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -96,14 +96,14 @@ export async function POST(request: NextRequest) {
     );
 
     // Subscribe to newsletter (if not already subscribed)
-    const existingSubscriber = queryOne<{ id: number }>(
+    const existingSubscriber = await queryOne<{ id: number }>(
       'SELECT id FROM newsletter_subscribers WHERE email = ?',
       [sanitizedData.email]
     );
 
     let isNewSubscriber = false;
     if (!existingSubscriber) {
-      execute(
+      await execute(
         `INSERT INTO newsletter_subscribers (email, name, source) VALUES (?, ?, 'quote')`,
         [sanitizedData.email, sanitizedData.name]
       );

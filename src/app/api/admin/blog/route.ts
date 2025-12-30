@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
     const offset = parseInt(searchParams.get('offset') || '0');
 
     let sql = 'SELECT * FROM blog_posts';
-    const params: unknown[] = [];
+    const params: (string | number)[] = [];
 
     if (status) {
       sql += ' WHERE status = ?';
@@ -48,8 +48,8 @@ export async function GET(request: NextRequest) {
     sql += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
     params.push(limit, offset);
 
-    const posts = query<BlogPost>(sql, params);
-    const total = queryOne<{ count: number }>(
+    const posts = await query<BlogPost>(sql, params);
+    const total = await queryOne<{ count: number }>(
       `SELECT COUNT(*) as count FROM blog_posts ${status ? 'WHERE status = ?' : ''}`,
       status ? [status] : []
     );
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
 
     const publishedAt = status === 'published' ? new Date().toISOString() : null;
 
-    const result = execute(
+    const result = await execute(
       `INSERT INTO blog_posts (title, slug, excerpt, content, featured_image, images, status, published_at, meta_title, meta_description)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [title, slug, excerpt || null, content, featured_image || null, images || null, status || 'draft', publishedAt, meta_title || null, meta_description || null]
@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     // If published, send newsletter notification
     if (status === 'published') {
       try {
-        const subscribers = query<NewsletterSubscriber>(
+        const subscribers = await query<NewsletterSubscriber>(
           'SELECT email, name FROM newsletter_subscribers WHERE is_active = 1'
         );
         
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      id: result.lastInsertRowid,
+      id: Number(result.lastInsertRowid),
       slug,
       message: 'تم إنشاء المقال بنجاح',
     }, { status: 201, headers: securityHeaders });

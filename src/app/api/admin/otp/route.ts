@@ -116,14 +116,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify admin exists in users table
-    const admin = queryOne<AdminUser>(
+    const admin = await queryOne<AdminUser>(
       'SELECT id, email, password_hash FROM users WHERE email = ? AND role = ?',
       [email, 'admin']
     );
 
     if (!admin) {
       // Try to find in admin_users table as fallback
-      const adminUser = queryOne<AdminUser>(
+      const adminUser = await queryOne<AdminUser>(
         'SELECT id, email, password_hash FROM admin_users WHERE email = ?',
         [email]
       );
@@ -231,13 +231,13 @@ export async function POST(request: NextRequest) {
         const passwordHash = await bcrypt.hash(newPassword, 12);
         
         // Try to update in users table first
-        execute(
+        await execute(
           'UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ? AND role = ?',
           [passwordHash, email, 'admin']
         );
         
         // Also try admin_users table as fallback
-        execute(
+        await execute(
           'UPDATE admin_users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ?',
           [passwordHash, email]
         );

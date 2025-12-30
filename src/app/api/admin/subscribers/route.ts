@@ -19,11 +19,11 @@ interface Subscriber {
 // GET - List all subscribers
 export async function GET() {
   try {
-    const subscribers = query<Subscriber>(
+    const subscribers = await query<Subscriber>(
       'SELECT * FROM newsletter_subscribers ORDER BY subscribed_at DESC'
     );
 
-    const total = queryOne<{ count: number }>(
+    const total = await queryOne<{ count: number }>(
       'SELECT COUNT(*) as count FROM newsletter_subscribers'
     );
 

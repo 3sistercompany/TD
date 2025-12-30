@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
     sql += ' ORDER BY sort_order ASC, id DESC';
 
     console.log('GET /api/clients - Executing query:', sql);
-    const clients = query<{
+    const clients = await query<{
       id: number;
       name: string;
       logo_url: string | null;
@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Name is required' }, { status: 400 });
     }
 
-    const result = execute(
+    const result = await execute(
       'INSERT INTO clients (name, logo_url) VALUES (?, ?)',
       [name, logo_url || null]
     );
@@ -64,7 +64,7 @@ export async function PUT(request: NextRequest) {
     }
 
     if (name !== undefined) {
-      execute(
+      await execute(
         'UPDATE clients SET name = ?, logo_url = ?, is_active = ? WHERE id = ?',
         [name, logo_url || null, is_active ?? 1, id]
       );
@@ -86,7 +86,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: 'ID is required' }, { status: 400 });
     }
 
-    execute('DELETE FROM clients WHERE id = ?', [id]);
+    await execute('DELETE FROM clients WHERE id = ?', [id]);
 
     return NextResponse.json({ success: true });
   } catch (error) {

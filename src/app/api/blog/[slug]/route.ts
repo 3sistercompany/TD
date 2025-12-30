@@ -29,7 +29,7 @@ export async function GET(
   try {
     const { slug } = await params;
 
-    const post = queryOne<BlogPost>(
+    const post = await queryOne<BlogPost>(
       `SELECT id, title, slug, excerpt, content, featured_image, images, published_at, views, meta_title, meta_description 
        FROM blog_posts 
        WHERE slug = ? AND status = 'published'`,
@@ -44,7 +44,7 @@ export async function GET(
     }
 
     // Increment view count
-    execute('UPDATE blog_posts SET views = views + 1 WHERE id = ?', [post.id]);
+    await execute('UPDATE blog_posts SET views = views + 1 WHERE id = ?', [post.id]);
 
     return NextResponse.json(post, { headers: securityHeaders });
   } catch (error) {

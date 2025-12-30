@@ -20,7 +20,7 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const subscriber = queryOne<Subscriber>(
+    const subscriber = await queryOne<Subscriber>(
       'SELECT * FROM newsletter_subscribers WHERE id = ?',
       [id]
     );
@@ -52,7 +52,7 @@ export async function PUT(
     const body = await request.json();
     const { is_active } = body;
 
-    const subscriber = queryOne<Subscriber>(
+    const subscriber = await queryOne<Subscriber>(
       'SELECT id FROM newsletter_subscribers WHERE id = ?',
       [id]
     );
@@ -65,7 +65,7 @@ export async function PUT(
     }
 
     if (is_active !== undefined) {
-      execute(
+      await execute(
         `UPDATE newsletter_subscribers 
          SET is_active = ?, 
              unsubscribed_at = CASE WHEN ? = 0 THEN CURRENT_TIMESTAMP ELSE NULL END
@@ -95,7 +95,7 @@ export async function DELETE(
   try {
     const { id } = await params;
 
-    const subscriber = queryOne<Subscriber>(
+    const subscriber = await queryOne<Subscriber>(
       'SELECT id FROM newsletter_subscribers WHERE id = ?',
       [id]
     );
@@ -107,7 +107,7 @@ export async function DELETE(
       );
     }
 
-    execute('DELETE FROM newsletter_subscribers WHERE id = ?', [id]);
+    await execute('DELETE FROM newsletter_subscribers WHERE id = ?', [id]);
 
     return NextResponse.json(
       { message: 'تم حذف المشترك' },

@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert into database
-    execute(
+    await execute(
       `INSERT INTO career_applications 
        (name, email, phone, position, message) 
        VALUES (?, ?, ?, ?, ?)`,
