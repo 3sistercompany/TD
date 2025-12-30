@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { sanitizeTrackingNumber } from '@/lib/security/sanitize';
 import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/security/rate-limit';
 
+export const runtime = 'edge';
+
 // Security headers for API responses
 const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',

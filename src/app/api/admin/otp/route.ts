@@ -3,6 +3,8 @@ import { queryOne, execute } from '@/lib/db';
 import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
 
+export const runtime = 'edge';
+
 const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
 };

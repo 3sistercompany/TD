@@ -5,6 +5,8 @@ import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/security/rat
 import { execute, queryOne } from '@/lib/db';
 import { sendContactConfirmation, sendContactAdminNotification, sendNewsletterWelcome } from '@/lib/email';
 
+export const runtime = 'edge';
+
 const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'X-Frame-Options': 'DENY',

@@ -3,6 +3,8 @@ import { writeFile, mkdir } from 'fs/promises';
 import { existsSync } from 'fs';
 import path from 'path';
 
+export const runtime = 'edge';
+
 // Allowed image types
 const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB

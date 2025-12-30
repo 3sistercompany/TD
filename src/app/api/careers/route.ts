@@ -5,6 +5,8 @@ import { checkRateLimit, getRateLimitKey, RATE_LIMITS } from '@/lib/security/rat
 import { execute } from '@/lib/db';
 import nodemailer from 'nodemailer';
 
+export const runtime = 'edge';
+
 const careersSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email().max(255),
