@@ -51,6 +51,7 @@
     "@types/uuid": "^9.0.7",
     "@types/validator": "^13.11.7",
     "better-sqlite3": "^12.5.0",
+    "esbuild": "^0.24.2",
     "eslint": "^8.56.0",
     "eslint-config-next": "^15.0.0",
     "typescript": "^5.3.3",
