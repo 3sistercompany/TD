@@ -1,8 +1,8 @@
-import { createClient, type Client, type ResultSet } from '@libsql/client';
+import { createClient, type Client, type ResultSet, type InValue } from '@libsql/client';
 import SCHEMA from './schema';
 
-// Type for database parameters
-type DbParam = string | number | boolean | null | undefined;
+// Type for database parameters (matches libsql InValue)
+type DbParam = string | number | boolean | null;
 
 // Singleton database instance
 let db: Client | null = null;
@@ -43,21 +43,21 @@ export async function initSchema() {
 // Safe query execution
 export async function query<T>(sql: string, params: DbParam[] = []): Promise<T[]> {
   const db = getDb();
-  const result = await db.execute({ sql, args: params });
+  const result = await db.execute({ sql, args: params as InValue[] });
   return result.rows as T[];
 }
 
 // Safe single row query
 export async function queryOne<T>(sql: string, params: DbParam[] = []): Promise<T | undefined> {
   const db = getDb();
-  const result = await db.execute({ sql, args: params });
+  const result = await db.execute({ sql, args: params as InValue[] });
   return result.rows[0] as T | undefined;
 }
 
 // Safe insert/update/delete
 export async function execute(sql: string, params: DbParam[] = []): Promise<ResultSet> {
   const db = getDb();
-  return await db.execute({ sql, args: params });
+  return await db.execute({ sql, args: params as InValue[] });
 }
 
 // Transaction wrapper
