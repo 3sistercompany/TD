@@ -1,29 +1,10 @@
 import SCHEMA from './schema';
 
-// Type for database parameters (matches Turso HTTP API)
+// Type for database parameters
 type DbParam = string | number | boolean | null;
 
-// Turso HTTP API response types
-interface TursoResponse {
-  results: Array<{
-    columns: string[];
-    rows: Array<Array<string | number | boolean | null>>;
-  }>;
-}
-
-// Convert Turso HTTP response to objects
-function rowsToObjects<T>(columns: string[], rows: Array<Array<any>>): T[] {
-  return rows.map(row => {
-    const obj: any = {};
-    columns.forEach((col, i) => {
-      obj[col] = row[i];
-    });
-    return obj as T;
-  });
-}
-
 // Execute SQL via Turso HTTP API
-async function executeSql(sql: string, args: DbParam[] = []): Promise<TursoResponse> {
+async function executeSql(sql: string, args: DbParam[] = []): Promise<any> {
   const tursoUrl = process.env.TURSO_DATABASE_URL;
   const tursoToken = process.env.TURSO_AUTH_TOKEN;
   
@@ -34,20 +15,17 @@ async function executeSql(sql: string, args: DbParam[] = []): Promise<TursoRespo
   // Convert libsql:// URL to https://
   const httpUrl = tursoUrl.replace('libsql://', 'https://');
   
-  const response = await fetch(`${httpUrl}/v2/pipeline`, {
+  const response = await fetch(`${httpUrl}`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${tursoToken}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      requests: [
+      statements: [
         {
-          type: 'execute',
-          stmt: {
-            sql,
-            args: args.map(arg => ({ type: 'text', value: String(arg ?? '') })),
-          },
+          q: sql,
+          params: args,
         },
       ],
     }),
@@ -58,9 +36,9 @@ async function executeSql(sql: string, args: DbParam[] = []): Promise<TursoRespo
     throw new Error(`Turso HTTP API error: ${response.status} ${error}`);
   }
 
-  return await response.json();
+  const data = await response.json();
+  return data[0]; // Return first statement result
 }
-
 // Initialize database schema
 export async function initSchema() {
   try {
@@ -77,9 +55,25 @@ export async function initSchema() {
 
 // Safe query execution
 export async function query<T>(sql: string, params: DbParam[] = []): Promise<T[]> {
-  const response = await executeSql(sql, params);
-  const result = response.results[0];
-  return rowsToObjects<T>(result.columns, result.rows);
+  const result = await executeSql(sql, params);
+  
+  if (!result || !result.results || !result.results.columns) {
+    return [];
+  }
+  
+  // Convert rows to objects
+  const columns = result.results.columns;
+  const rows = result.results.rows || [];
+  
+  return rows.map((row: any) => {
+    const obj: any = {};
+    columns.forEach((col: string, i: number) => {
+      // Handle different value formats from Turso
+      const value = row[i];
+      obj[col] = value?.value !== undefined ? value.value : value;
+    });
+    return obj as T;
+  });
 }
 
 // Safe single row query
@@ -90,14 +84,10 @@ export async function queryOne<T>(sql: string, params: DbParam[] = []): Promise<
 
 // Safe insert/update/delete
 export async function execute(sql: string, params: DbParam[] = []): Promise<{ rowsAffected: number; lastInsertRowid?: bigint }> {
-  const response = await executeSql(sql, params);
-  const result = response.results[0];
+  const result = await executeSql(sql, params);
   
-  // For INSERT statements, try to get the last insert ID
-  // Note: Turso HTTP API doesn't directly return lastInsertRowid
-  // We'll need to use RETURNING clause or a separate query
   return { 
-    rowsAffected: result?.rows?.length || 0,
+    rowsAffected: result?.results?.rows?.length || 0,
     lastInsertRowid: undefined // Will be handled by RETURNING clause
   };
 }
