@@ -37,6 +37,56 @@ export const metadata: Metadata = {
   creator: 'TD Logistics',
   publisher: 'TD Logistics',
   metadataBase: new URL('https://tdlogistics.sa'),
+  icons: {
+    icon: [
+      { url: '/tabicon.png', type: 'image/png', sizes: '32x32' },
+    ],
+    shortcut: '/tabicon.png',
+    apple: '/tabicon.png',
+  },
+  alternates: {
+    canonical: '/',
+    languages: {
+      'ar-SA': '/',
+    },
+  },
+  openGraph: {
+    title: 'تي دي للخدمات اللوجستية | شريكك الموثوق في الخدمات اللوجستية',
+    description: 'خدمات لوجستية متكاملة في السعودية. توصيل سريع، تتبع مباشر، دفع عند الاستلام. معدل توصيل 93%+ في الوقت المحدد.',
+    type: 'website',
+    locale: 'ar_SA',
+    url: 'https://tdlogistics.sa',
+    siteName: 'تي دي للخدمات اللوجستية',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'تي دي للخدمات اللوجستية',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'تي دي للخدمات اللوجستية',
+    description: 'شريكك الموثوق في الخدمات اللوجستية في السعودية',
+    images: ['/og-image.jpg'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'your-google-verification-code',
+    yandex: 'your-yandex-verification-code',
+  },
 };
 
 export default function RootLayout({
