@@ -125,3 +125,7 @@ npm start
 ## الترخيص
 
 جميع الحقوق محفوظة © 2024 تي دي للخدمات اللوجستية
+
+Developer: Muaadh AL-Sway
+Studio: MUSTUDIOLAB
+Last Updated: February 2026

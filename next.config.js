@@ -31,10 +31,9 @@ const nextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()' },
-          { 
-            key: 'Content-Security-Policy', 
-            value: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline' https://static.cloudflareinsights.com https://maps.googleapis.com https://maps.gstatic.com https://*.google.com https://*.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com https://*.google.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https: https://maps.googleapis.com https://maps.gstatic.com https://*.googleapis.com https://*.gstatic.com https://*.google.com; connect-src 'self' https://apisv2.logestechs.com https://maps.googleapis.com https://cloudflareinsights.com https://*.google.com; frame-src 'self' https://www.google.com https://*.google.com https://maps.google.com https://google.com; frame-ancestors 'self';"
-          },
+          // NOTE: Content-Security-Policy is now enforced at Cloudflare Worker level (.open-next/cloudflare-templates/worker.js)
+          // This ensures edge-level enforcement and prevents conflicts with Worker CSP
+          // Do NOT add CSP here - it will be overridden by Worker CSP anyway
         ],
       },
       // Image caching
