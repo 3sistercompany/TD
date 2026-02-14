@@ -126,7 +126,8 @@ npm start
 
 جميع الحقوق محفوظة © 2024 تي دي للخدمات اللوجستية
 
+## Deveplor by 👨🏽‍💻
 Developer: Muaadh AL-Sway
 Studio: MUSTUDIOLAB
 Last Updated: February 2026
-"# TD" 
+ 
