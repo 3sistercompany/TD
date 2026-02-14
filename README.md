@@ -128,6 +128,8 @@ npm start
 
 ## Deveplor by 👨🏽‍💻
 Developer: Muaadh AL-Sway
+
 Studio: MUSTUDIOLAB
+
 Last Updated: February 2026
  
